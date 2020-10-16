@@ -25,7 +25,7 @@
 #define AIO_SERVER      "io.adafruit.com"
 #define AIO_SERVERPORT  1883                  
 #define AIO_USERNAME    "JUANJOROJASH"
-#define AIO_KEY         "aio_CBBh14Rm8hA3L30YDKEurb44vl7E"
+#define AIO_KEY         "aio_WrBp37mZc3UAxXUr73RNh7SB9LQf"
 
 uint32_t reel_rotations = 0;
 bool reel_flag;
