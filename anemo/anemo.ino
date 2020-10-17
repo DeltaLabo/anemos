@@ -30,15 +30,21 @@
 uint32_t reel_rotations = 0;
 bool reel_flag;
 uint64_t current;
+/* create a hardware timer */
+hw_timer_t * timer = NULL;
+bool timer_flag;
+int counter;
 
 WiFiClient client;
 Adafruit_MQTT_Client mqtt(&client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_KEY);       
 Adafruit_MQTT_Publish anemo_data = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/anemo_test");
-Adafruit_MQTT_Subscribe timefeed = Adafruit_MQTT_Subscribe(&mqtt, "time/seconds");
 
 void IRAM_ATTR reel_isr() {
-  reel_flag = 1;
-  current = rtc_time_get();
+    counter++;
+}
+
+void IRAM_ATTR timer_isr(){
+  timer_flag = 1;
 }
 
 void setup() {
@@ -56,38 +62,41 @@ void setup() {
   Serial.println("WiFi connected");
   Serial.println("IP address: "); Serial.println(WiFi.localIP());
   pinMode(2, INPUT);
-  attachInterrupt(2, reel_isr, RISING);
+  attachInterrupt(2, &reel_isr, RISING);
+  Serial.println("Start GPIO interrupt on PIN#2...");  
+    /* Use 1st timer of 4 */
+  /* 1 tick take 1/(80MHZ/80) = 1us so we set divider 80 and count up */
+  timer = timerBegin(0, 80, true);
+  /* Attach timer_isr function to our timer */
+  timerAttachInterrupt(timer, &timer_isr, true);
+  /* Set alarm to call onTimer function every second 1 tick is 1us
+  => 1 second is 1000000us */
+  /* Repeat the alarm (third parameter) */
+  timerAlarmWrite(timer, 1000000, true);
+  /* Start an alarm */
+  timerAlarmEnable(timer);
+  Serial.println("Start timer..");
 }
 
-uint64_t previous;
-uint64_t cycles_passed;
-double ms_passed = 0;
- //period_in_us;
-int counter;
 double anemo_speed;
-uint32_t period_in_us = rtc_clk_cal(RTC_CAL_RTC_MUX,10);  //ten cycle average
+double anemo_prev_speed;
 
 void loop() {
   MQTT_connect(); 
-  if (reel_flag){
-    counter++;
-    reel_flag = 0;
-    cycles_passed = current - previous;
-    previous = current;   
-    ms_passed += (double) ((rtc_time_slowclk_to_us(cycles_passed,period_in_us))/1000.0);
-  }
-  if (counter == 10){
-    ms_passed = ms_passed / counter;
-    anemo_speed = (1000/ms_passed)*2.5*0.44704;  
-    ms_passed = 0;
+  if (timer_flag){
+    anemo_speed = counter*2.5*0.44704;  
     counter = 0;
     Serial.print("Speed: ");
     Serial.println(anemo_speed);
-    if (! anemo_data.publish(anemo_speed)) {
-      Serial.println(F("Failed"));
-    }else{
-      Serial.println(F("OK!"));
-    }    
+    if (anemo_speed != anemo_prev_speed){
+      if (! anemo_data.publish(anemo_speed)) {
+        Serial.println(F("Failed"));
+      }else{
+        Serial.println(F("OK!"));
+      }            
+    }
+    anemo_prev_speed = anemo_speed;
+    timer_flag=0;    
   }
 }
 
