@@ -30,17 +30,37 @@
 uint32_t reel_rotations = 0;
 bool reel_flag;
 uint64_t current;
+uint64_t previous;
+uint64_t cycles_passed;
+double ms_passed = 0;
+double prev_ms_passed = 0;
+double avg_time_ms = 0;
+double curr_speed;
+double prev_speed;
+uint32_t period_in_us = rtc_clk_cal(RTC_CAL_RTC_MUX,10);  //ten cycle average
 /* create a hardware timer */
 hw_timer_t * timer = NULL;
 bool timer_flag;
-int counter;
+int counter = 0;
+bool pub_flag = 0;
+
 
 WiFiClient client;
 Adafruit_MQTT_Client mqtt(&client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_KEY);       
 Adafruit_MQTT_Publish anemo_data = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/anemo_test");
 
 void IRAM_ATTR reel_isr() {
-    counter++;
+  if(counter == 0){
+    previous = rtc_time_get();
+    ms_passed = 0;
+  }else{
+    current = rtc_time_get();
+    cycles_passed = current - previous;
+    previous = current;
+    prev_ms_passed = ms_passed;  
+    ms_passed += (double) ((rtc_time_slowclk_to_us(cycles_passed,period_in_us))/1000.0);
+  }
+  counter++;
 }
 
 void IRAM_ATTR timer_isr(){
@@ -78,25 +98,34 @@ void setup() {
   Serial.println("Start timer..");
 }
 
-double anemo_speed;
-double anemo_prev_speed;
+
 
 void loop() {
   MQTT_connect(); 
-  if (timer_flag){
-    anemo_speed = counter*2.5*0.44704;  
-    counter = 0;
+  if (timer_flag){  //if one second has passed
+    timer_flag = 0; //clear the flag 
+    Serial.print("ms_passed: ");
+    Serial.println(ms_passed);
+    Serial.print("counter: ");
+    Serial.println(counter);
+      if (counter < 2){
+        curr_speed = 0;   
+      }else{
+        avg_time_ms = ms_passed / counter;
+        curr_speed = (1000/avg_time_ms)*2.5*0.44704;  
+        ms_passed = ms_passed - prev_ms_passed; //keep only last interval  
+        counter = 1;      
+      }
     Serial.print("Speed: ");
-    Serial.println(anemo_speed);
-    if (anemo_speed != anemo_prev_speed){
-      if (! anemo_data.publish(anemo_speed)) {
+    Serial.println(curr_speed);
+    if((curr_speed != prev_speed)&(pub_flag)){
+      if (! anemo_data.publish(curr_speed)) {
         Serial.println(F("Failed"));
       }else{
         Serial.println(F("OK!"));
-      }            
+      }
     }
-    anemo_prev_speed = anemo_speed;
-    timer_flag=0;    
+    prev_speed = curr_speed;    
   }
 }
 
