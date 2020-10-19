@@ -46,7 +46,8 @@ bool pub_flag = 1;
 bool print_flag = 1;
 int pub_secs = 0; // in seconds
 int result = 0;
-char receive_buffer[20] = {'\0'};
+char received_buffer[20] = {'\0'};
+char received_char = '\0';
 
 WiFiClient client;
 Adafruit_MQTT_Client mqtt(&client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_KEY);       
@@ -63,17 +64,8 @@ void IRAM_ATTR timer_isr(){
 void setup() {
   Serial.begin(115200);
   delay(10);
-  Serial.print('\n')
-  Serial.print("Connecting to ");
-  Serial.println(WLAN_SSID);
-  WiFi.begin(WLAN_SSID, WLAN_PASS);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println();
-  Serial.println("WiFi connected");
-  Serial.println("IP address: "); Serial.println(WiFi.localIP());
+  Serial.print('\n');
+  menu();
   pinMode(2, INPUT);
   attachInterrupt(2, &reed_isr, RISING);
   Serial.println("Start GPIO interrupt on PIN#2...");  
@@ -91,7 +83,7 @@ void setup() {
   Serial.println("Start timer..");
 }
 
-char telemetry[9] = {'\0'};
+char telemetry[10] = {'\0'};
 
 void loop() {
   if(reed_flag){
@@ -144,7 +136,8 @@ void loop() {
         }
       }
     }
-    telemetry[7] = '\n';
+    telemetry[7] = '\r';
+    telemetry[8] = '\n';
     if (print_flag) Serial.print(telemetry); 
 
   }
@@ -171,6 +164,28 @@ void MQTT_connect(){
 }
 
 void menu(){
-  Serial.print("Ingrese el SSID o presione enter para usar ");
-  Serial.println(WLAN_SSID);
+  Serial.setTimeout(10000);
+  Serial.println("Do you want to publish on Adafruit.io (y/n)?");
+  while (!(received_char == 0x79 | received_char == 0x6E)){
+    if (Serial.available()) received_char = Serial.read();
+  }
+  if (received_char == 0x79){ //if a "y" is received
+    pub_flag = 1;
+    Serial.print("Publish interval: ");
+    Serial.print(PUB_INTERVAL);
+    Serial.println(" seconds");
+    Serial.print("Connecting to... ");
+    Serial.println(WLAN_SSID);
+    WiFi.begin(WLAN_SSID, WLAN_PASS);  
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+    }
+    Serial.println();
+    Serial.println("WiFi connected");
+    Serial.println("IP address: "); 
+    Serial.println(WiFi.localIP());  
+  }else{
+    pub_flag = 0;
+  }
 }
