@@ -46,7 +46,7 @@ bool pub_flag = 1;
 bool print_flag = 1;
 int pub_secs = 0; // in seconds
 int result = 0;
-char received_buffer[20] = {'\0'};
+char the_buffer[20] = {'\0'};
 char received_char = '\0';
 
 WiFiClient client;
@@ -83,7 +83,7 @@ void setup() {
   Serial.println("Start timer..");
 }
 
-char telemetry[10] = {'\0'};
+char telemetry[15] = {'\0'};
 
 void loop() {
   if(reed_flag){
@@ -110,12 +110,11 @@ void loop() {
         }        
         counter = 0;  //clear the counter to restart the speed calculation    
       }
-    result = sprintf(telemetry, "S%05.2fN", anemo_speed); //create telemetry string before publising in MTTQ 
+    sprintf(telemetry, "S%05.2fN", anemo_speed); //create telemetry string before publising in MTTQ 
     /*the string has the S as firsts character, then 5 spaces for the velocity including two before the dot and two after the dot, then
     * the status of the MTTQ transmission 
-    */
-    
-    
+    */   
+    strcpy(the_buffer, "00.00");
     if(pub_flag){
       pub_secs++;
       pub_speed += anemo_speed;
@@ -126,20 +125,22 @@ void loop() {
         if(pub_speed != prev_speed){ //only publish if the value is different from the previous
           if (! anemo_data.publish(pub_speed)) {
             telemetry[6] = 'E';
+            strcpy(the_buffer, "00.00");
           }else{
             telemetry[6] = 'S';
+            sprintf(the_buffer, "%05.2f", pub_speed);
           }
           prev_speed = pub_speed;
-          Serial.print("pub_speed: ");
-          Serial.println(pub_speed);
           pub_speed = 0;
         }
+      }else{
+        strcpy(the_buffer, "00.00");
       }
-    }
-    telemetry[7] = '\r';
-    telemetry[8] = '\n';
+    }    
+    strcat(telemetry, the_buffer);
+    telemetry[12] = '\r';
+    telemetry[13] = '\n';
     if (print_flag) Serial.print(telemetry); 
-
   }
 }
 
