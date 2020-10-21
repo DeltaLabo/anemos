@@ -82,7 +82,7 @@ void setup() {
   menu();
 }
 
-char telemetry[14] = {'\0'};
+char telemetry[15] = {'\0'};
 
 void loop() {
   if (Serial.available()) received_char = Serial.read();
@@ -139,8 +139,8 @@ void loop() {
       }
     }    
     strcat(telemetry, the_buffer);
-    //telemetry[12] = '\r';
-    telemetry[12] = '\n';
+    telemetry[12] = '\r';
+    telemetry[13] = '\n';
     if (print_flag) Serial.print(telemetry); 
   }
 }

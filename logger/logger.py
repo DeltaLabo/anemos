@@ -27,7 +27,11 @@ ser.write(b'n')
 ser.readline().decode() #discard it
 ser.write(b'\x1B')
 print(ser.readline().decode(),end='')
-ser.write(b'n')
+answer = input("")
+if answer == 'y':
+      pub_flag = 1
+ser.write(answer.encode())
+#ser.write(b'n')
 data = []
 while True:
       try:
