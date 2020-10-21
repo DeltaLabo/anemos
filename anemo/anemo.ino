@@ -64,11 +64,9 @@ void IRAM_ATTR timer_isr(){
 void setup() {
   Serial.begin(115200);
   delay(10);
-  Serial.print('\n');
-  menu();
   pinMode(2, INPUT);
   attachInterrupt(2, &reed_isr, RISING);
-  Serial.println("Start GPIO interrupt on PIN#2...");  
+  //Serial.println("Start GPIO interrupt on PIN#2...");  
     /* Use 1st timer of 4 */
   /* 1 tick take 1/(80MHZ/80) = 1us so we set divider 80 and count up */
   timer = timerBegin(0, 80, true);
@@ -80,12 +78,15 @@ void setup() {
   timerAlarmWrite(timer, 1000000, true);
   /* Start an alarm */
   timerAlarmEnable(timer);
-  Serial.println("Start timer..");
+  //Serial.println("Start timer..");
+  menu();
 }
 
-char telemetry[15] = {'\0'};
+char telemetry[14] = {'\0'};
 
 void loop() {
+  if (Serial.available()) received_char = Serial.read();
+  if (received_char == 0x1B) menu();
   if(reed_flag){
     reed_flag = 0;  
     counter++;  
@@ -138,8 +139,8 @@ void loop() {
       }
     }    
     strcat(telemetry, the_buffer);
-    telemetry[12] = '\r';
-    telemetry[13] = '\n';
+    //telemetry[12] = '\r';
+    telemetry[12] = '\n';
     if (print_flag) Serial.print(telemetry); 
   }
 }
