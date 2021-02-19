@@ -24,6 +24,7 @@ Anemometer reading and cloud uploading software
 
 * Install Git
 * Install Arduino IDE
+* Follow this [instructions](https://heltec-automation-docs.readthedocs.io/en/latest/esp32/quick_start.html) 
 * Install Heltec ESP32 Library in the Arduino Library Manager
 Open Arduino IDE, then Select `Sketch`->`Include Library`->`Manage Libraries...`
 Search `Heltec ESP32` and install it.
