@@ -7,10 +7,20 @@ Anemometer reading and cloud uploading software
 
 ### What is this repository for? ###
 
-* This repository was created to develop and ESP32 based embedded logger and cloud uploader for anemmometer data for LIENE. 
+* This repository was created to develop and ESP32 based embedded logger and cloud uploader for wind turbine power generation, and wind velocity data for LIENE.
 
-### HELTEC LoRa 32 board information
+### Turbine info
 
+* [Info page](https://mwands.com/missouri-raptor-g4-wind-turbine-generator) 
+
+### Anemometer info
+
+* Model: Inspeed Vortex
+* [Documentation page](http://www.old.inspeed.com/anemometers/Vortex_Wind_Sensor.asp)
+
+### Microcontroller info
+
+* Model: HELTEC LoRa 32
 * [Documentation page](https://heltec.org/project/wifi-lora-32/)
 * [Pinout diagram](https://resource.heltec.cn/download/WiFi_LoRa_32/WIFI_LoRa_32_V2.pdf)
 * [Schematic](https://resource.heltec.cn/download/WiFi_LoRa_32/V2/WIFI_LoRa_32_V2(868-915).PDF)
@@ -43,5 +53,4 @@ Search `Adafruit MQTT` and install it.
 ### Who do I talk to? ###
 
 * [Juan J. Rojas](mailto:juan.rojas@itcr.ac.cr)
-* [Alejandro Arroyo](mailto:alearroyov98@gmail.com)
-* [Sergio Solorzano](mailto:solorzanos117@gmail.com)
+* [Nestor Martinez](mailto:arnold7martinez@gmail.com)
