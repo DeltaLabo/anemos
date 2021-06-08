@@ -29,6 +29,7 @@ Anemometer reading and cloud uploading software
 ### Enclousure
 
 * [Page](https://www.se.com/es/es/product/NSYCRN33200P/spacial-crn-plain-door-with-mount.plate.-h300xw300xd200-ip66-ik10-ral7035../) 
+* [Page](https://mazcr.com/gabinetes-cajas-y-accesorios-plasticos/458040-caja-paso-162x212x110.html)
 
 ### How do I get set up? ###
 
