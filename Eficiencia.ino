@@ -22,12 +22,12 @@
 #include "Adafruit_MQTT_Client.h"   /* Incluir Biblioteca Adafruit_MQTT_Client.h de Adafruit [Externa] */
 
 // 2 - Datos para la conexión wifi y transmisión mqtt
-#define WLAN_SSID       "Fmartinez"                          /* Ingresar Red a la cual va a registrarse */
-#define WLAN_PASS       "santia7go7"                         /* Ingresar Clave                          */
+#define WLAN_SSID       "ssid"                          /* Ingresar Red a la cual va a registrarse */
+#define WLAN_PASS       "pass"                         /* Ingresar Clave                          */
 #define AIO_SERVER      "io.adafruit.com"                    /* Ingresar Servidor para registrar datos  */
 #define AIO_SERVERPORT  1883                                 /* Ingresar puerto de acceso               */          
-#define AIO_USERNAME    "arnold7martinez"                    /* Ingresar nombre del Usuario             */
-#define AIO_KEY         "aio_NBsv87VLWolabDx4K6V8WcLtcFpH"   /* Ingresar clave/permiso del servidor     */
+#define AIO_USERNAME    "username"                    /* Ingresar nombre del Usuario             */
+#define AIO_KEY         "key"   /* Ingresar clave/permiso del servidor     */
 #define PUB_INTERVAL    2                                    /* Definir que se tomara uno de cada dos datos al publicar */ 
 
 // 3 - Voltaje Fase 1
