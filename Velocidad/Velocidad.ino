@@ -6,12 +6,12 @@
 #include "Adafruit_MQTT_Client.h"
 // #include "soc/rtc.h" No usado
 
-#define WLAN_SSID       "Fmartinez"
-#define WLAN_PASS       "santia7go7"
+#define WLAN_SSID       "ssid"
+#define WLAN_PASS       "pass"
 #define AIO_SERVER      "io.adafruit.com"
 #define AIO_SERVERPORT  1883                  
-#define AIO_USERNAME    "arnold7martinez"
-#define AIO_KEY         "aio_NBsv87VLWolabDx4K6V8WcLtcFpH"
+#define AIO_USERNAME    "username"
+#define AIO_KEY         "key"
 #define PUB_INTERVAL    2
 
 unsigned long currentmicros;
